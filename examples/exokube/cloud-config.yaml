@@ -1,0 +1,39 @@
+#cloud-config
+
+manage_etc_hosts: true
+fqdn: ${fqdn}
+
+apt_sources:
+- source: "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${ubuntu} stable"
+  keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+- source: "deb [arch=amd64] http://apt.kubernetes.io kubernetes-${ubuntu} main"
+  keyid: 54A647F9048D5688D7DA2ABE6A030B21BA07F4FB
+
+package_update: true
+package_upgrade: true
+
+packages:
+- curl
+- [ docker-ce, "17.03.2~ce-0~ubuntu-${ubuntu}" ]
+- kubeadm
+- kubectl
+- kubelet
+
+write_files:
+- path: /etc/docker/daemon.json
+  content: |
+    {
+      "log-driver": "json-file",
+      "log-opts": {
+        "max-size": "10m",
+        "max-file": "5"
+      }
+    }
+
+runcmd:
+- [ systemctl, enable, docker ]
+- [ systemctl, start, docker ]
+- [ kubeadm, init, "--pod-network-cidr=192.168.0.0/16", "--skip-token-print" ]
+- [ mkdir, -p, /home/ubuntu/.kube ]
+- [ cp, -i, /etc/kubernetes/admin.conf, /home/ubuntu/.kube/config ]
+- [ chown, -R, "ubuntu:ubuntu", /home/ubuntu/.kube ]

@@ -32,6 +32,12 @@ configuration file built from a template.
 An example showing how the [Private networks](https://www.exoscale.com/syslog/introducing-multiple-private-networks/)
 API support can be used to create a private network between compute instances.
 
+## [Exokube](exokube)
+
+A sample single node Kubernetes cluster to act as a [Minikube][minikube] on Exoscale.
+
 ## External examples
 
 - Oliver Moser's: [Prometheus Service Discovery Demo](https://github.com/olmoser/infracoders-reloaded)
+
+[minikube]: https://github.com/kubernetes/minikube
