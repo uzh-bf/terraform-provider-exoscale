@@ -1,13 +1,16 @@
-# Exokube simple setup
+# Exokube single machine setup
 
 ```console
 $ terraform apply
 
-...
+Outputs:
 
-$ ssh ubuntu@...
+exokube_https = https://159.100.251.241.xip.io
+exokube_ssh = ubuntu@159.100.251.241
 
-# wait for it
+$ ssh ubuntu@159.100.251.241
+
+# wait for cloud-init to complete
 exokube $ tail -f /var/log/cloud-init-output.log
 
 Cloud-init v. 17.1 finished at ...
@@ -59,6 +62,14 @@ exokube    Ready     master    3m        v1.10.1   <none>        Ubuntu 16.04.4 
 
 ```
 $ kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+```
+
+## Admin locally
+
+```
+$ ssh ubuntu@159.100.251.241 -- sudo cat /etc/kubernetes/admin.conf > admin.conf
+$ kubectl --kubeconfig admin.conf proxy
+Starting to server on 127.0.0.1:8001
 ```
 
 ## TODO
