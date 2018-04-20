@@ -66,13 +66,20 @@ $ kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/maste
 
 ## Admin locally
 
+By downloading the `admin.conf`, which is a bad idea[™](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#optional-controlling-your-cluster-from-machines-other-than-the-master), you may administrate the remote server.
+
 ```
 $ ssh ubuntu@159.100.251.241 -- sudo cat /etc/kubernetes/admin.conf > admin.conf
 $ kubectl --kubeconfig admin.conf proxy
 Starting to server on 127.0.0.1:8001
 ```
 
-## TODO
+## Login using a token
 
-- How to access the dashboard
-- Running a service
+To log into the dashboard, you need to authenticate as somebody or something (Service Account), a clever hack[®](https://github.com/kubernetes/dashboard/issues/2474#issuecomment-365704926) is to pick the token from the _clusterrole-aggregation-controller_.
+
+```
+$ kubectl -n kube-system describe secrets \
+   `kubectl -n kube-system get secrets | awk '/clusterrole-aggregation-controller/ {print $1}'` \
+       | awk '/token:/ {print $2}'
+```

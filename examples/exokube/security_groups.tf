@@ -23,12 +23,12 @@ resource "exoscale_security_group_rule" "exokube_ssh" {
   cidr = "0.0.0.0/0"
 }
 
-resource "exoscale_security_group_rule" "exokube_https" {
+resource "exoscale_security_group_rule" "exokube_api_server" {
   type = "INGRESS"
-  description = "TLS"
+  description = "Kubernetes API Server"
   security_group_id = "${exoscale_security_group.exokube.id}"
   protocol = "TCP"
-  start_port = 443
-  end_port = 443
+  start_port = 6443
+  end_port = 6443
   cidr = "0.0.0.0/0"
 }
