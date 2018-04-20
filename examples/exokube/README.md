@@ -74,6 +74,8 @@ $ kubectl --kubeconfig admin.conf proxy
 Starting to server on 127.0.0.1:8001
 ```
 
+<http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/>
+
 ## Login using a token
 
 To log into the dashboard, you need to authenticate as somebody or something (Service Account), a clever hack[®](https://github.com/kubernetes/dashboard/issues/2474#issuecomment-365704926) is to pick the token from the _clusterrole-aggregation-controller_.
