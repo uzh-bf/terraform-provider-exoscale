@@ -31,30 +31,30 @@ func networkResource() *schema.Resource {
 			Required: true,
 			ForceNew: true,
 		},
-		"cidr": {
-			Type:         schema.TypeString,
-			Optional:     true,
-			ValidateFunc: validation.CIDRNetwork(0, 32),
-		},
-		"netmask": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"gateway": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"dns1": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"dns2": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"network_domain": {
-			Type:     schema.TypeString,
-			Computed: true,
+		"iprange": &schema.Schema{
+			Type:     schema.TypeSet,
+			Optional: true,
+			MaxItems: 1,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"start_ip": {
+						Type:         schema.TypeString,
+						Required:     true,
+						ValidateFunc: validation.SingleIP(),
+					},
+					"end_ip": {
+						Type:         schema.TypeString,
+						Required:     true,
+						ValidateFunc: validation.SingleIP(),
+					},
+					"netmask": {
+						Type:         schema.TypeString,
+						Optional:     true,
+						Default:      "255.255.255.0",
+						ValidateFunc: validation.SingleIP(),
+					},
+				},
+			},
 		},
 	}
 
@@ -317,37 +317,8 @@ func applyNetwork(d *schema.ResourceData, network *egoscale.Network) error {
 	d.SetId(network.ID.String())
 	d.Set("name", network.Name)
 	d.Set("display_text", network.DisplayText)
-	d.Set("network_domain", network.NetworkDomain)
 	d.Set("network_offering", network.NetworkOfferingName)
 	d.Set("zone", network.ZoneName)
-	d.Set("cidr", "")
-	if network.CIDR != nil {
-		d.Set("cidr", network.CIDR.String())
-	}
-
-	if network.Gateway != nil {
-		d.Set("gateway", network.Gateway.String())
-	} else {
-		d.Set("gateway", "")
-	}
-
-	if network.Netmask != nil {
-		d.Set("netmask", network.Netmask.String())
-	} else {
-		d.Set("netmask", "")
-	}
-
-	if network.DNS1 != nil {
-		d.Set("dns1", network.DNS1.String())
-	} else {
-		d.Set("dns1", "")
-	}
-
-	if network.DNS2 != nil {
-		d.Set("dns2", network.DNS2.String())
-	} else {
-		d.Set("dns2", "")
-	}
 
 	// tags
 	tags := make(map[string]interface{})
