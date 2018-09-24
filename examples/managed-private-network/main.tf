@@ -7,11 +7,22 @@ variable "zone" {
 }
 
 variable "static_machines" {
-  default = 1
+  default = 2
 }
 
 variable "dynamic_machines" {
-  default = 1
+  default = 2
+}
+
+resource "exoscale_network" "intra" {
+  name = "demo-intra"
+  display_text = "demo intra privnet"
+  zone = "${var.zone}"
+  network_offering = "PrivNet"
+
+  start_ip = "10.0.0.50"
+  end_ip = "10.0.0.250"
+  netmask = "255.255.255.0"
 }
 
 resource "exoscale_compute" "static" {
@@ -29,25 +40,13 @@ resource "exoscale_compute" "static" {
   user_data = "${file("cloud-config.yaml")}"
 }
 
-resource "exoscale_network" "intra" {
-  name = "demo-intra"
-  display_text = "demo intra privnet"
-  zone = "${var.zone}"
-  network_offering = "PrivNet"
-
-  iprange {
-    start_ip = "10.0.0.10"
-    end_ip = "10.0.0.200"
-    netmask = "255.255.255.0"
-  }
-}
-
 resource "exoscale_nic" "eth_static" {
   count = "${exoscale_compute.static.count}"
 
   compute_id = "${exoscale_compute.static.*.id[count.index]}"
   network_id = "${exoscale_network.intra.id}"
 
+  # static IP address
   ip_address = "${format("10.0.0.%d", count.index + 1)}"
 }
 
