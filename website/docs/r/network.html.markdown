@@ -18,6 +18,11 @@ resource "exoscale_network" "privNet" {
   zone = "ch-dk-2"
   network_offering = "PrivNet"
 
+  // Optional
+  start_ip = "10.0.0.20"
+  end_ip = "10.0.0.254"
+  netmask = "255.255.255.0"
+
   tags {
     # ...
   }
@@ -28,11 +33,17 @@ resource "exoscale_network" "privNet" {
 
 - `name` - (Required) name of the network
 
-- `display_text` - (Required) description of the network
+- `display_text` - description of the network
 
 - `network_offering` - (Required) network offering name
 
 - `zone` - (Required) name of the zone
+
+- `start_ip` - First IP address of IP range used by the DHCP service to automatically assign
+
+- `end_ip` - Last IP address of the IP range used by the DHCP service
+
+- `netmask` - Netmask defining the IP network allowed for the static lease (see `exoscale_nic` resource)
 
 - `tags` - dictionary of tags (key / value)
 
