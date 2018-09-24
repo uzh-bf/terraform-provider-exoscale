@@ -33,12 +33,12 @@ func networkResource() *schema.Resource {
 		},
 		"start_ip": {
 			Type:         schema.TypeString,
-			Required:     true,
+			Optional:     true,
 			ValidateFunc: validation.SingleIP(),
 		},
 		"end_ip": {
 			Type:         schema.TypeString,
-			Required:     true,
+			Optional:     true,
 			ValidateFunc: validation.SingleIP(),
 		},
 		"netmask": {
@@ -100,6 +100,9 @@ func createNetwork(d *schema.ResourceData, meta interface{}) error {
 	startIP := net.ParseIP(d.Get("start_ip").(string))
 	endIP := net.ParseIP(d.Get("end_ip").(string))
 	netmask := net.ParseIP(d.Get("netmask").(string))
+	if startIP == nil && endIP == nil {
+		netmask = nil
+	}
 
 	req := &egoscale.CreateNetwork{
 		Name:              name,
@@ -205,39 +208,37 @@ func updateNetwork(d *schema.ResourceData, meta interface{}) error {
 
 	client := GetComputeClient(meta)
 
-	d.Partial(true)
-
 	id, err := egoscale.ParseUUID(d.Id())
 	if err != nil {
 		return err
 	}
 
+	if d.HasChange("start_ip") || d.HasChange("end_ip") {
+		for _, key := range []string{"start_ip", "end_ip"} {
+			o, n := d.GetChange(key)
+			if o.(string) != "" && n.(string) == "" {
+				return fmt.Errorf("[ERROR] new value of %q cannot be empty. old value was %s. The resource must be recreated instead.", key, o.(string))
+			}
+		}
+	}
+
 	// Update name and display_text
-	resp, err := client.RequestWithContext(ctx, &egoscale.UpdateNetwork{
+	updateNetwork := &egoscale.UpdateNetwork{
 		ID:          id,
 		Name:        d.Get("name").(string),
 		DisplayText: d.Get("display_text").(string),
-	})
-
-	if err != nil {
-		return err
+		StartIP:     net.ParseIP(d.Get("start_ip").(string)),
+		EndIP:       net.ParseIP(d.Get("end_ip").(string)),
+		Netmask:     net.ParseIP(d.Get("netmask").(string)),
 	}
-
-	network := resp.(*egoscale.Network)
-
-	err = applyNetwork(d, network)
-	if err != nil {
-		return err
-	}
-
-	d.SetPartial("name")
-	d.SetPartial("display_text")
 
 	// Update tags
-	requests, err := updateTags(d, "tags", network.ResourceType())
+	requests, err := updateTags(d, "tags", egoscale.Network{}.ResourceType())
 	if err != nil {
 		return err
 	}
+
+	requests = append(requests, updateNetwork)
 
 	for _, req := range requests {
 		_, err := client.RequestWithContext(ctx, req)
@@ -251,9 +252,6 @@ func updateNetwork(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	d.SetPartial("tags")
-
-	d.Partial(false)
 	return nil
 }
 
