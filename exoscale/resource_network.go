@@ -31,30 +31,21 @@ func networkResource() *schema.Resource {
 			Required: true,
 			ForceNew: true,
 		},
-		"iprange": &schema.Schema{
-			Type:     schema.TypeSet,
-			Optional: true,
-			MaxItems: 1,
-			Elem: &schema.Resource{
-				Schema: map[string]*schema.Schema{
-					"start_ip": {
-						Type:         schema.TypeString,
-						Required:     true,
-						ValidateFunc: validation.SingleIP(),
-					},
-					"end_ip": {
-						Type:         schema.TypeString,
-						Required:     true,
-						ValidateFunc: validation.SingleIP(),
-					},
-					"netmask": {
-						Type:         schema.TypeString,
-						Optional:     true,
-						Default:      "255.255.255.0",
-						ValidateFunc: validation.SingleIP(),
-					},
-				},
-			},
+		"start_ip": {
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validation.SingleIP(),
+		},
+		"end_ip": {
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validation.SingleIP(),
+		},
+		"netmask": {
+			Type:         schema.TypeString,
+			Optional:     true,
+			Default:      "255.255.255.0",
+			ValidateFunc: validation.SingleIP(),
 		},
 	}
 
@@ -106,49 +97,21 @@ func createNetwork(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	if networkOffering.SpecifyIPRanges {
-		return fmt.Errorf("SpecifyIPRanges is not yet supported.")
-	}
+	startIP := net.ParseIP(d.Get("start_ip").(string))
+	endIP := net.ParseIP(d.Get("end_ip").(string))
+	netmask := net.ParseIP(d.Get("netmask").(string))
 
-	netmask := net.IPv4zero
-	gateway := net.IPv4zero
-
-	if cidr, ok := d.GetOk("cidr"); ok {
-		c := cidr.(string)
-		ip, ipnet, err := net.ParseCIDR(c)
-		if err != nil {
-			return err
-		}
-
-		if ip.To4() == nil {
-			return fmt.Errorf("Provided cidr %s is not an IPv4 address", c)
-		}
-
-		// subnet address
-		subnetIP := ip.Mask(ipnet.Mask)
-		// netmask
-		netmask = net.IPv4(
-			ipnet.Mask[0],
-			ipnet.Mask[1],
-			ipnet.Mask[2],
-			ipnet.Mask[3])
-
-		// last address
-		gateway = net.IPv4(
-			subnetIP[0]+^ipnet.Mask[0],
-			subnetIP[1]+^ipnet.Mask[1],
-			subnetIP[2]+^ipnet.Mask[2],
-			subnetIP[3]+^ipnet.Mask[3])
-	}
-
-	resp, err := client.RequestWithContext(ctx, &egoscale.CreateNetwork{
+	req := &egoscale.CreateNetwork{
 		Name:              name,
 		DisplayText:       displayText,
 		NetworkOfferingID: networkOffering.ID,
 		ZoneID:            zone.ID,
+		StartIP:           startIP,
+		EndIP:             endIP,
 		Netmask:           netmask,
-		Gateway:           gateway,
-	})
+	}
+
+	resp, err := client.RequestWithContext(ctx, req)
 
 	if err != nil {
 		return err
@@ -319,6 +282,16 @@ func applyNetwork(d *schema.ResourceData, network *egoscale.Network) error {
 	d.Set("display_text", network.DisplayText)
 	d.Set("network_offering", network.NetworkOfferingName)
 	d.Set("zone", network.ZoneName)
+
+	if network.StartIP != nil && network.EndIP != nil && network.Netmask != nil {
+		d.Set("start_ip", network.StartIP.String())
+		d.Set("end_ip", network.EndIP.String())
+		d.Set("netmask", network.Netmask.String())
+	} else {
+		d.Set("start_ip", nil)
+		d.Set("end_ip", nil)
+		d.Set("netmask", nil)
+	}
 
 	// tags
 	tags := make(map[string]interface{})

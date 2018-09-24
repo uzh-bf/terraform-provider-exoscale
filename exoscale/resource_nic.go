@@ -14,11 +14,13 @@ func nicResource() *schema.Resource {
 		Create: createNic,
 		Exists: existsNic,
 		Read:   readNic,
+		Update: updateNic,
 		Delete: deleteNic,
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(defaultTimeout),
 			Read:   schema.DefaultTimeout(defaultTimeout),
+			Update: schema.DefaultTimeout(defaultTimeout),
 			Delete: schema.DefaultTimeout(defaultTimeout),
 		},
 
@@ -36,7 +38,6 @@ func nicResource() *schema.Resource {
 			"ip_address": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ForceNew:     true,
 				Description:  "IP address",
 				ValidateFunc: ValidateIPv4String,
 			},
@@ -52,7 +53,6 @@ func nicResource() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			// XXX add the IPv6 fields
 		},
 	}
 }
@@ -165,6 +165,39 @@ func existsNic(d *schema.ResourceData, meta interface{}) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func updateNic(d *schema.ResourceData, meta interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), d.Timeout(schema.TimeoutUpdate))
+	defer cancel()
+
+	client := GetComputeClient(meta)
+
+	id, err := egoscale.ParseUUID(d.Id())
+	if err != nil {
+		return err
+	}
+
+	if d.HasChange("ip_address") {
+		ipAddress := net.ParseIP(d.Get("ip_address").(string))
+
+		d.SetPartial("ip_address")
+
+		_, err := client.RequestWithContext(ctx, egoscale.UpdateVMNicIP{
+			NicID:     id,
+			IPAddress: ipAddress,
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
+	err = readCompute(d, meta)
+
+	d.Partial(false)
+
+	return err
 }
 
 func deleteNic(d *schema.ResourceData, meta interface{}) error {
