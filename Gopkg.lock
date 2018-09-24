@@ -106,12 +106,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:196c981493997e177b8374b608470fcaaed05646b271b1a176556ce0d2d58f57"
+  branch = "update-network"
+  digest = "1:ee3f5a464a7158536c086ad72c0180d6000a8eb94ab6a2ebb67b1983976cb91b"
   name = "github.com/exoscale/egoscale"
   packages = ["."]
   pruneopts = "UT"
-  revision = "67368ae928a70cb5cb44ecf6f418ee33a1ade044"
-  version = "v0.11.6"
+  revision = "cb5ee8fe9f9d6fc7151bb1d787c82c4b18847c4b"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
