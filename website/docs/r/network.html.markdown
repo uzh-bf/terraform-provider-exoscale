@@ -15,10 +15,10 @@ description: |-
 resource "exoscale_network" "privNet" {
   name = "myPrivNet"
   display_text = "description"
-  zone = "ch-dk-2"
+  zone = "ch-gva-2"
   network_offering = "PrivNet"
 
-  // Optional
+  // Optional and only available at zone: CH-GVA-2
   start_ip = "10.0.0.20"
   end_ip = "10.0.0.254"
   netmask = "255.255.255.0"

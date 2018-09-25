@@ -288,7 +288,6 @@ func applyNetwork(d *schema.ResourceData, network *egoscale.Network) error {
 	} else {
 		d.Set("start_ip", nil)
 		d.Set("end_ip", nil)
-		d.Set("netmask", nil)
 	}
 
 	// tags
