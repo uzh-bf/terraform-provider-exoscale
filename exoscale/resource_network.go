@@ -11,6 +11,8 @@ import (
 	"github.com/hashicorp/terraform/helper/validation"
 )
 
+const defaultNetmask = "255.255.255.0"
+
 func networkResource() *schema.Resource {
 	s := map[string]*schema.Schema{
 		"name": {
@@ -44,7 +46,7 @@ func networkResource() *schema.Resource {
 		"netmask": {
 			Type:         schema.TypeString,
 			Optional:     true,
-			Default:      "255.255.255.0",
+			Description:  fmt.Sprintf("Network mask (default to %s)", defaultNetmask),
 			ValidateFunc: validation.SingleIP(),
 		},
 	}
@@ -102,6 +104,8 @@ func createNetwork(d *schema.ResourceData, meta interface{}) error {
 	netmask := net.ParseIP(d.Get("netmask").(string))
 	if startIP == nil && endIP == nil {
 		netmask = nil
+	} else if netmask == nil {
+		netmask = net.ParseIP(defaultNetmask)
 	}
 
 	req := &egoscale.CreateNetwork{
