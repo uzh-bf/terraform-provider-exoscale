@@ -109,27 +109,15 @@ func readNic(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	vmID, err := egoscale.ParseUUID(d.Get("compute_id").(string))
-	if err != nil {
-		return err
+	nic := &egoscale.Nic{ID: id}
+
+	if err := client.GetWithContext(ctx, nic); err != nil {
+		if err != nil {
+			return handleNotFound(d, err)
+		}
 	}
 
-	resp, err := client.RequestWithContext(ctx, &egoscale.ListNics{
-		NicID:            id,
-		VirtualMachineID: vmID,
-	})
-
-	if err != nil {
-		return handleNotFound(d, err)
-	}
-
-	nics := resp.(*egoscale.ListNicsResponse)
-	if nics.Count == 0 {
-		return fmt.Errorf("No nic found for ID: %s", d.Id())
-	}
-
-	nic := nics.Nic[0]
-	return applyNic(d, nic)
+	return applyNic(d, *nic)
 }
 
 func existsNic(d *schema.ResourceData, meta interface{}) (bool, error) {
@@ -143,25 +131,11 @@ func existsNic(d *schema.ResourceData, meta interface{}) (bool, error) {
 		return false, err
 	}
 
-	vmID, err := egoscale.ParseUUID(d.Get("compute_id").(string))
-	if err != nil {
-		return false, err
-	}
+	nic := &egoscale.Nic{ID: id}
 
-	resp, err := client.RequestWithContext(ctx, &egoscale.ListNics{
-		NicID:            id,
-		VirtualMachineID: vmID,
-	})
-
-	if err != nil {
+	if err := client.GetWithContext(ctx, nic); err != nil {
 		e := handleNotFound(d, err)
 		return d.Id() != "", e
-	}
-
-	nics := resp.(*egoscale.ListNicsResponse)
-	if nics.Count == 0 {
-		d.SetId("")
-		return false, nil
 	}
 
 	return true, nil
@@ -193,7 +167,7 @@ func updateNic(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
-	err = readCompute(d, meta)
+	err = readNic(d, meta)
 
 	d.Partial(false)
 
