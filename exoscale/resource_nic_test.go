@@ -20,13 +20,22 @@ func TestAccNic(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckNicDestroy,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccNicCreate,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckComputeExists("exoscale_compute.vm", vm),
 					testAccCheckNetworkExists("exoscale_network.net", nw),
 					testAccCheckNicExists("exoscale_nic.nic", vm, nic),
 					testAccCheckNicAttributes(nic, net.ParseIP("10.0.0.1")),
+					testAccCheckNicCreateAttributes(),
+				),
+			}, {
+				Config: testAccNicUpdate,
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckComputeExists("exoscale_compute.vm", vm),
+					testAccCheckNetworkExists("exoscale_network.net", nw),
+					testAccCheckNicExists("exoscale_nic.nic", vm, nic),
+					testAccCheckNicAttributes(nic, net.ParseIP("10.0.0.3")),
 					testAccCheckNicCreateAttributes(),
 				),
 			},
@@ -67,8 +76,8 @@ func testAccCheckNicAttributes(nic *egoscale.Nic, ipAddress net.IP) resource.Tes
 			return fmt.Errorf("nic is nil")
 		}
 
-		if nic.IPAddress.Equal(ipAddress) {
-			return fmt.Errorf("nic has bad IP address, got %s", nic.IPAddress)
+		if !nic.IPAddress.Equal(ipAddress) {
+			return fmt.Errorf("nic has bad IP address, got %s, want %s", nic.IPAddress, ipAddress)
 		}
 
 		return nil
@@ -154,6 +163,49 @@ resource "exoscale_nic" "nic" {
   network_id = "${exoscale_network.net.id}"
 
   ip_address = "10.0.0.1"
+}
+`,
+	EXOSCALE_TEMPLATE,
+	EXOSCALE_ZONE,
+	EXOSCALE_ZONE,
+	EXOSCALE_NETWORK_OFFERING,
+)
+
+var testAccNicUpdate = fmt.Sprintf(`
+resource "exoscale_ssh_keypair" "key" {
+  name = "terraform-test-keypair"
+}
+
+resource "exoscale_compute" "vm" {
+  display_name = "terraform-test-compute"
+  template = %q
+  zone = %q
+  size = "Micro"
+  disk_size = "12"
+  key_pair = "${exoscale_ssh_keypair.key.name}"
+
+  timeouts {
+    create = "10m"
+    delete = "30m"
+  }
+}
+
+resource "exoscale_network" "net" {
+  name = "terraform-test-network"
+  display_text = "Terraform Acceptance Test"
+  zone = %q
+  network_offering = %q
+
+  start_ip = "10.0.0.1"
+  end_ip = "10.0.0.1"
+  netmask = "255.255.255.248"
+}
+
+resource "exoscale_nic" "nic" {
+  compute_id = "${exoscale_compute.vm.id}"
+  network_id = "${exoscale_network.net.id}"
+
+  ip_address = "10.0.0.3"
 }
 `,
 	EXOSCALE_TEMPLATE,
