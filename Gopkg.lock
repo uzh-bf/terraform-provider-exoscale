@@ -107,12 +107,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:dd7d8cd395473924e03aeec5e442c293a750f3fe6c049a62ea3e7ae5b8dd193a"
+  branch = "new-listnics"
+  digest = "1:2de9ea2700980784b2e165a39e708028e2f4c8c2c102b617cc74026296be6906"
   name = "github.com/exoscale/egoscale"
   packages = ["."]
   pruneopts = "UT"
-  revision = "95b38c27134f4707541966415208fe9e74a524e3"
-  version = "v0.12.1"
+  revision = "b0bd53ae5f19c4606fb9ab8c8685fdd59f7947a0"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"

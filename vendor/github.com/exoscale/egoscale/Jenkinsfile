@@ -11,19 +11,19 @@ node {
         checkout scm
       }
       stage('gofmt') {
-        gofmt(repo, "cs", "exo")
+        gofmt(repo, "cs")
       }
       updateGithubCommitStatus('PENDING', "${env.WORKSPACE}/src")
       stage('Build') {
         parallel (
           "golint": {
-            golint(repo, "cmd/cs/...", "cmd/exo/...", "generate")
+            golint(repo, "cmd/cs/...", "generate")
           },
           "go test": {
             test(repo)
           },
           "go install": {
-            build(repo, "cs", "exo")
+            build(repo, "cs")
           },
         )
       }

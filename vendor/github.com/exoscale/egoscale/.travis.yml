@@ -47,24 +47,4 @@ jobs:
       cd cmd/cs
       dep check
       dep ensure -v -vendor-only
-      cd ../exo
-      dep ensure -v -vendor-only
-      cd ../..
-      go run cmd/exo/completion/main.go
       goreleaser --snapshot --skip-sign
-  - stage: gh-pages
-    go: "1.10"
-    if: branch = master AND type = push
-    script: |
-      cd website
-      sh prepare.sh
-      wget https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.deb
-      sudo dpkg -i hugo_${HUGO_VERSION}_Linux-64bit.deb
-      hugo
-      cd public
-      git init
-      git config user.name "TravisCI"
-      git config user.email "travis@travis-ci.org"
-      git add .
-      git commit -m "Deployed to github pages"
-      git push -f -q "https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}" master:gh-pages
