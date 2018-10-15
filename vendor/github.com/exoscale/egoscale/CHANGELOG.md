@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.12.1
+------
+
+- fix: `UpdateVMNicIP` is async
+
 0.12.0
 ------
 
@@ -20,7 +25,7 @@ Changelog
 0.11.5
 ------
 
-- feat: addition of `updateVmNicIp`
+- feat: addition of `UpdateVMNicIP`
 - fix: `UpdateVMAffinityGroup` expected response
 
 0.11.4

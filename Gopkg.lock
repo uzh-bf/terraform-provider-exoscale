@@ -34,7 +34,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:c995fc5d9499d81367b49116f61293d5c092ae571ed9e60114c275cea8a02d9c"
+  digest = "1:bc2410ad4d4fb637698c3c71d514cdf38a43a8c5f83c3c415af1925e426abdc5"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -71,8 +71,8 @@
     "service/sts",
   ]
   pruneopts = "UT"
-  revision = "eee06b117565431c7f0002553e4e40f128858d17"
-  version = "v1.15.51"
+  revision = "bf8067ceb6e7f51e150c218972dccfeeed892b85"
+  version = "v1.15.54"
 
 [[projects]]
   branch = "master"
@@ -107,12 +107,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:df43c76b7a9d96bf5bd88a603a64fdf473812c4a28d5be5645ce579364d06dd9"
+  digest = "1:dd7d8cd395473924e03aeec5e442c293a750f3fe6c049a62ea3e7ae5b8dd193a"
   name = "github.com/exoscale/egoscale"
   packages = ["."]
   pruneopts = "UT"
-  revision = "88e8814b3cb464bd2d37302684da485952c5ff8b"
-  version = "v0.12.0"
+  revision = "95b38c27134f4707541966415208fe9e74a524e3"
+  version = "v0.12.1"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
@@ -123,12 +123,12 @@
   version = "v1.7.0"
 
 [[projects]]
-  digest = "1:b98e7574fc27ec166fb31195ec72c3bd0bffd73926d3612eb4c929bc5236f75b"
+  digest = "1:15e27372d379b45b18ac917b9dafc45c45485239490ece18cca97a12f9591146"
   name = "github.com/go-ini/ini"
   packages = ["."]
   pruneopts = "UT"
-  revision = "7b294651033cd7d9e7f0d9ffa1b75ed1e198e737"
-  version = "v1.38.3"
+  revision = "9c8236e659b76e87bf02044d06fde8683008ff3e"
+  version = "v1.39.0"
 
 [[projects]]
   digest = "1:4c0989ca0bcd10799064318923b9bc2db6b4d6338dd75f3f2d86c3511aaaf5cf"
@@ -315,7 +315,7 @@
   name = "github.com/hashicorp/yamux"
   packages = ["."]
   pruneopts = "UT"
-  revision = "7221087c3d281fda5f794e28c2ea4c6e4d5c4558"
+  revision = "2f1d1f20f75d5404f53b9edf6b53ed5505508675"
 
 [[projects]]
   digest = "1:e22af8c7518e1eab6f2eab2b7d7558927f816262586cd6ed9f349c97a6c285c4"
@@ -448,7 +448,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:31401c753dad7a42e93d463bd437375eda35bf0d1606c1f7e0c6bfe7eb286ba8"
+  digest = "1:ecc7fbde3d397eb26aa33028e133ca762f7da31f1c9a7ca86867761282913bbe"
   name = "github.com/zclconf/go-cty"
   packages = [
     "cty",
@@ -460,7 +460,7 @@
     "cty/set",
   ]
   pruneopts = "UT"
-  revision = "d9b87d891d0b42399ce5bab2f87ad2860ca0239c"
+  revision = "1f835aab79c29c842f2e8624541053e8ff618cd8"
 
 [[projects]]
   branch = "master"
@@ -478,7 +478,7 @@
     "openpgp/s2k",
   ]
   pruneopts = "UT"
-  revision = "7c1a557ab941a71c619514f229f0b27ccb0c27cf"
+  revision = "0c41d7ab0a0ee717d4590a44bcb987dfd9e183eb"
 
 [[projects]]
   branch = "master"
@@ -496,15 +496,15 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "146acd28ed5894421fb5aac80ca93bc1b1f46f87"
+  revision = "49bb7cea24b1df9410e1712aa6433dae904ff66a"
 
 [[projects]]
   branch = "master"
-  digest = "1:c2789211d4035eb0843b85958ecf7cb4a5ea91c2d4decee652c94ce898e433cb"
+  digest = "1:0a40b0bdd57a93e741d8557465be3a2edeec408e9b6399586ad65bbe8e355796"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "4497e2df6f9e69048a54498c7affbbec3294ad47"
+  revision = "fa43e7bc11baaae89f3f902b2b4d832b68234844"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
